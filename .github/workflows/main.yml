@@ -1,7 +1,11 @@
 name: Create Free Azure VM and Storage
 
 on:
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
+
+permissions:
+  id-token: write  
+  contents: read    
 
 jobs:
   create-free-resources:
@@ -19,24 +23,24 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Set Azure Subscription
-      run: az account set --subscription <SUBSCRIPTION_ID>
+      run: az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Create Resource Group
       run: |
-        az group create --name MyResourceGroup --location eastus
+        az group create --name MyTestResourceGroup --location eastus
 
     - name: Create Free-tier Azure Storage Account
       run: |
         az storage account create \
           --name mystoragefree12345 \
-          --resource-group MyResourceGroup \
+          --resource-group MyTestResourceGroup \
           --location eastus \
           --sku Standard_LRS
 
     - name: Create Free-tier Ubuntu Virtual Machine
       run: |
         az vm create \
-          --resource-group MyResourceGroup \
+          --resource-group MyTestResourceGroup \
           --name MyVM \
           --image UbuntuLTS \
           --size Standard_B1s \
@@ -45,4 +49,4 @@ jobs:
 
     - name: Get VM Public IP
       run: |
-        az vm list-ip-addresses --name MyVM --resource-group MyResourceGroup --output table
+        az vm list-ip-addresses --name MyVM --resource-group MyTestResourceGroup --output table
