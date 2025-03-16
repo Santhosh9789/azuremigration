@@ -1,10 +1,10 @@
-name: Create Free Azure VM
+name: Create Free Azure VM and Storage
 
 on:
   workflow_dispatch:  # Manual trigger
 
 jobs:
-  create-free-vm:
+  create-free-resources:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,24 +14,33 @@ jobs:
     - name: Log in to Azure
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}  # Use GitHub Secret
+        creds: ${{ secrets.AZURE_CREDENTIALS }}  # Ensure this secret is set in GitHub
+
+    - name: Set Azure Subscription
+      run: az account set --subscription <SUBSCRIPTION_ID>
 
     - name: Create Resource Group
       run: |
-        az group create --name MyTestresourcegroup --location eastus
+        az group create --name MyResourceGroup --location eastus
+
+    - name: Create Free-tier Azure Storage Account
+      run: |
+        az storage account create \
+          --name mystoragefree12345 \
+          --resource-group MyResourceGroup \
+          --location eastus \
+          --sku Standard_LRS
 
     - name: Create Free-tier Ubuntu Virtual Machine
       run: |
         az vm create \
-          --resource-group MyTestresourcegroup \
-          --name testvm \
+          --resource-group MyResourceGroup \
+          --name MyVM \
           --image UbuntuLTS \
           --size Standard_B1s \
           --admin-username azureuser \
-          --generate-ssh-keys \
-          --public-ip-sku Basic
+          --generate-ssh-keys
 
     - name: Get VM Public IP
       run: |
-        az vm list-ip-addresses --name testvm --resource-group MyTestresourcegroup --output table
-
+        az vm list-ip-addresses --name MyVM --resource-group MyResourceGroup --output table
