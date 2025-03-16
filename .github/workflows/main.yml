@@ -14,23 +14,24 @@ jobs:
     - name: Log in to Azure
       uses: azure/login@v1
       with:
-        creds: ${{ bac13df9-78a7-4f29-8fbe-654bf8eaef2a }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }}  # Use GitHub Secret
 
     - name: Create Resource Group
       run: |
-        az group create --name MyFreeResourceGroup --location eastus
+        az group create --name MyTestresourcegroup --location eastus
 
     - name: Create Free-tier Ubuntu Virtual Machine
       run: |
         az vm create \
-          --resource-group test \
+          --resource-group MyTestresourcegroup \
           --name testvm \
           --image UbuntuLTS \
-          --size Standard_B1s \  # Free-tier VM size
+          --size Standard_B1s \
           --admin-username azureuser \
           --generate-ssh-keys \
-          --public-ip-sku Basic  # Free-tier Public IP
+          --public-ip-sku Basic
 
     - name: Get VM Public IP
       run: |
-        az vm list-ip-addresses --name testvm --resource-group test --output table
+        az vm list-ip-addresses --name testvm --resource-group MyTestresourcegroup --output table
+
