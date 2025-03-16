@@ -21,7 +21,7 @@ jobs:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        auth-type: OIDC  # Ensure this is correctly set to OIDC
+        auth-type: SERVICE_PRINCIPAL  
 
     - name: Set Azure Subscription
       run: az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
